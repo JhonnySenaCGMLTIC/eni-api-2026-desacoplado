@@ -1,88 +1,660 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Capacitaciones | SENA</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              sena: {
-                green: "#39A900",
-                dark: "#00324D",
-                light: "#F6F6F6",
-                accent: "#00A5B5",
-              },
-            },
-            fontFamily: { sans: ["Inter", "system-ui", "sans-serif"] },
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Capacitaciones - SENA Colombia</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Work Sans / Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Work Sans"', 'sans-serif'],
           },
-        },
-      };
-    </script>
-    <link rel="stylesheet" href="assets/css/styles.css" />
-  </head>
-  <body class="bg-sena-light min-h-screen font-sans text-sena-dark">
-    <header class="bg-sena-green shadow-md sticky top-0 z-10">
-      <div class="max-w-7xl mx-auto px-4 py-4 flex items-center gap-3">
-        <div
-          class="w-10 h-10 rounded-full bg-white flex items-center justify-center font-bold text-sena-green"
-        >
-          S
+          colors: {
+            sena: {
+              green: '#39A900',
+              'green-dark': '#007C3E',
+              blue: '#00324D',
+              light: '#F4F4F4',
+              accent: '#238200'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #F4F4F4;
+      font-family: 'Work Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between">
+
+  <!-- ENCABEZADO INSTITUCIONAL SENA -->
+  <header class="bg-[#39A900] text-white shadow-md sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <!-- Logo y Título Institucional -->
+      <div class="flex items-center gap-3">
+        <!-- Escudo / Símbolo SENA Vectorial -->
+        <div class="w-10 h-10 bg-white rounded-lg p-1.5 flex items-center justify-center shadow-sm shrink-0">
+          <svg viewBox="0 0 100 100" class="w-full h-full fill-[#39A900]" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="20" r="14"/>
+            <path d="M50 38 C32 38, 20 50, 20 68 L28 68 C28 55, 37 46, 50 46 C63 46, 72 55, 72 68 L80 68 C80 50, 68 38, 50 38 Z"/>
+            <path d="M50 49 L36 90 L46 90 L50 72 L54 90 L64 90 Z"/>
+          </svg>
         </div>
         <div>
-          <h1 class="text-white text-xl font-bold leading-tight">
-            SENA · Capacitaciones
-          </h1>
-          <p class="text-white/80 text-xs">Oferta formativa disponible</p>
+          <span class="text-xs uppercase tracking-wider text-green-100 font-semibold block leading-tight">Servicio Nacional de Aprendizaje</span>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white leading-tight">Portal de Capacitaciones</h1>
         </div>
       </div>
-    </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-8">
-      <div
-        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6"
+      <!-- Badge de Estado de Conexión y Contador -->
+      <div class="flex items-center gap-2">
+        <span id="badge-total" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white/20 text-white backdrop-blur-sm border border-white/30">
+          <span class="w-2 h-2 rounded-full bg-white mr-1.5 animate-pulse"></span>
+          Cargando registros...
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-grow">
+    
+    <!-- BARRA DE ACCIÓN: BUSCADOR Y FILTROS -->
+    <section class="bg-white rounded-xl shadow-sm border border-slate-200/80 p-4 sm:p-5 mb-8">
+      <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        <!-- Input de Búsqueda en tiempo real -->
+        <div class="relative flex-1">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <i data-lucide="search" class="w-5 h-5"></i>
+          </div>
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Buscar por programa, instructor, modalidad, fecha o palabra clave..." 
+            class="w-full pl-11 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#39A900] focus:border-transparent transition-all"
+          >
+          <button id="clear-search-btn" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Acciones secundarias: Contador y Recargar -->
+        <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0">
+          <span id="results-count" class="text-xs sm:text-sm font-medium text-slate-600 bg-slate-100 px-3 py-2 rounded-lg border border-slate-200">
+            0 resultados
+          </span>
+          <button 
+            id="refresh-btn" 
+            title="Refrescar datos"
+            class="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-[#00324D] bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors border border-slate-300"
+          >
+            <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Actualizar</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ESTADO: CARGANDO (SKELETON / SPINNER) -->
+    <section id="state-loading" class="py-12 flex flex-col items-center justify-center text-center">
+      <div class="w-14 h-14 border-4 border-[#39A900]/20 border-t-[#39A900] rounded-full animate-spin mb-4"></div>
+      <p class="text-base font-semibold text-[#00324D]">Consultando la oferta institucional...</p>
+      <p class="text-xs text-slate-500 mt-1 max-w-sm">Conectando de forma segura con el repositorio oficial de capacitaciones SENA.</p>
+    </section>
+
+    <!-- ESTADO: ERROR -->
+    <section id="state-error" class="hidden py-12 px-4 max-w-md mx-auto text-center">
+      <div class="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-200 shadow-sm">
+        <i data-lucide="alert-triangle" class="w-8 h-8"></i>
+      </div>
+      <h3 class="text-lg font-bold text-slate-900 mb-2">No se pudieron cargar las capacitaciones</h3>
+      <p id="error-message-text" class="text-sm text-slate-600 mb-6 leading-relaxed">
+        Ocurrió un problema de conexión al intentar consultar el servicio de datos.
+      </p>
+      <button 
+        id="retry-btn" 
+        class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-[#39A900] hover:bg-[#007C3E] text-white text-sm font-medium rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-offset-2 focus:ring-[#39A900]"
       >
-        <h2 class="text-2xl font-bold text-sena-dark">
-          Programas de formación
-        </h2>
-        <input
-          id="searchInput"
-          type="search"
-          placeholder="Buscar capacitación..."
-          class="w-full sm:w-72 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sena-green"
-        />
+        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        Reintentar conexión
+      </button>
+    </section>
+
+    <!-- ESTADO: VACÍO / SIN RESULTADOS -->
+    <section id="state-empty" class="hidden py-12 px-4 max-w-md mx-auto text-center">
+      <div class="w-16 h-16 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 border border-amber-200">
+        <i data-lucide="search-x" class="w-8 h-8"></i>
       </div>
+      <h3 class="text-lg font-bold text-[#00324D] mb-2">No se encontraron capacitaciones</h3>
+      <p class="text-sm text-slate-600 mb-5 leading-relaxed">
+        No hay coincidencias con los términos de búsqueda ingresados. Intenta con otra palabra clave.
+      </p>
+      <button 
+        id="reset-filter-btn" 
+        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-[#00324D] bg-slate-200 hover:bg-slate-300 rounded-lg transition-colors"
+      >
+        Limpiar búsqueda
+      </button>
+    </section>
 
-      <div id="loading" class="text-center py-16">
-        <div
-          class="inline-block w-8 h-8 border-4 border-sena-green border-t-transparent rounded-full animate-spin"
-        ></div>
-        <p class="mt-3 text-gray-600">Cargando capacitaciones...</p>
+    <!-- CONTENEDOR DE TARJETAS (GRID RESPONSIVA) -->
+    <section id="cards-grid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+      <!-- Inyectado dinámicamente vía JavaScript -->
+    </section>
+
+  </main>
+
+  <!-- MODAL DE DETALLE COMPLETO DEL REGISTRO -->
+  <div id="detail-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col border border-slate-200 animate-in fade-in zoom-in-95 duration-200">
+      <!-- Modal Header -->
+      <div class="bg-[#00324D] text-white px-6 py-4 flex items-center justify-between border-b border-white/10">
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="book-open" class="w-5 h-5 text-[#39A900]"></i>
+          <h3 id="modal-title" class="font-bold text-lg text-white">Detalles de la Capacitación</h3>
+        </div>
+        <button id="close-modal-btn" class="text-slate-300 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
       </div>
-
-      <div
-        id="error"
-        class="hidden bg-red-50 border border-red-300 text-red-700 rounded-lg p-4"
-      ></div>
-
-      <div
-        id="cardsGrid"
-        class="hidden grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-      ></div>
-
-      <div id="empty" class="hidden text-center text-gray-500 py-16">
-        No se encontraron capacitaciones.
+      <!-- Modal Body -->
+      <div id="modal-body" class="p-6 overflow-y-auto space-y-4 text-sm text-slate-700 custom-scroll">
+        <!-- Campos detallados inyectados por JS -->
       </div>
-    </main>
+      <!-- Modal Footer -->
+      <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-end">
+        <button id="close-modal-footer-btn" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 text-sm font-medium rounded-lg transition-colors">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
 
-    <footer class="mt-12 py-6 text-center text-sm text-gray-500">
-      © SENA · Servicio Nacional de Aprendizaje
-    </footer>
+  <!-- PIE DE PÁGINA INSTITUCIONAL -->
+  <footer class="bg-[#00324D] text-slate-300 border-t-4 border-[#39A900] mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+      <div class="flex items-center gap-3 text-center sm:text-left">
+        <div class="w-8 h-8 rounded bg-white/10 flex items-center justify-center shrink-0">
+          <svg viewBox="0 0 100 100" class="w-5 h-5 fill-[#39A900]" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="20" r="14"/>
+            <path d="M50 38 C32 38, 20 50, 20 68 L28 68 C28 55, 37 46, 50 46 C63 46, 72 55, 72 68 L80 68 C80 50, 68 38, 50 38 Z"/>
+            <path d="M50 49 L36 90 L46 90 L50 72 L54 90 L64 90 Z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-semibold text-white">Servicio Nacional de Aprendizaje SENA</p>
+          <p class="text-slate-400">Ministerio del Trabajo • República de Colombia</p>
+        </div>
+      </div>
+      <div class="text-center sm:text-right text-slate-400">
+        <p>Sistema de Consulta y Gestión de Capacitaciones</p>
+        <p class="mt-0.5 text-slate-400">Datos sincronizados con API REST</p>
+      </div>
+    </div>
+  </footer>
 
-    <script src="config.js"></script>
-    <script src="assets/js/app.js"></script>
-  </body>
+  <!-- LÓGICA JAVASCRIPT MODERNO INTEGRADA -->
+  <script>
+    // ==========================================
+    // CONFIGURACIÓN DE LA API REST SUPABASE
+    // ==========================================
+    const API_CONFIG = {
+      endpoint: 'https://ntzbfvpgkvukdbgixedw.supabase.co/rest/v1/capacitaciones?select=*',
+      headers: {
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50emJmdnBna3Z1a2RiZ2l4ZWR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ0OTU1ODksImV4cCI6MjExMDA3MTU4OX0.XhMBaNjDia9Cen44Gm32D8DUXBMtMD47ksBcTXqqHNU',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50emJmdnBna3Z1a2RiZ2l4ZWR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ0OTU1ODksImV4cCI6MjExMDA3MTU4OX0.XhMBaNjDia9Cen44Gm32D8DUXBMtMD47ksBcTXqqHNU',
+        'Content-Type': 'application/json'
+      }
+    };
+
+    // Estado local de la aplicación
+    let allRecords = [];
+    let schemaKeys = [];
+    let keyRoles = {
+      titleKey: null,
+      imageKey: null,
+      descKey: null,
+      dateKeys: [],
+      badgeKeys: []
+    };
+
+    // Referencias al DOM
+    const stateLoading = document.getElementById('state-loading');
+    const stateError = document.getElementById('state-error');
+    const errorMessageText = document.getElementById('error-message-text');
+    const stateEmpty = document.getElementById('state-empty');
+    const cardsGrid = document.getElementById('cards-grid');
+    const searchInput = document.getElementById('search-input');
+    const clearSearchBtn = document.getElementById('clear-search-btn');
+    const resultsCount = document.getElementById('results-count');
+    const badgeTotal = document.getElementById('badge-total');
+    const retryBtn = document.getElementById('retry-btn');
+    const refreshBtn = document.getElementById('refresh-btn');
+    const resetFilterBtn = document.getElementById('reset-filter-btn');
+
+    // Elementos del Modal
+    const detailModal = document.getElementById('detail-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalBody = document.getElementById('modal-body');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const closeModalFooterBtn = document.getElementById('close-modal-footer-btn');
+
+    // ==========================================
+    // UTILIDADES: DETECCIÓN Y FORMATO
+    // ==========================================
+
+    // Verifica si un string es una URL válida de imagen
+    function isImageUrl(val) {
+      if (typeof val !== 'string') return false;
+      const clean = val.trim().toLowerCase();
+      return clean.match(/\.(jpeg|jpg|gif|png|webp|svg)($|\?)/i) || 
+             clean.startsWith('data:image/') ||
+             clean.includes('images.unsplash.com') ||
+             clean.includes('/storage/v1/object/public/');
+    }
+
+    // Verifica si un valor es una fecha válida ISO o reconocible
+    function isDateString(val, keyName = '') {
+      if (typeof val !== 'string' && typeof val !== 'number') return false;
+      const strVal = String(val).trim();
+      // Palabras clave típicas en nombres de columnas de fecha
+      const dateHints = ['fecha', 'date', 'created_at', 'updated_at', 'inicio', 'fin', 'plazo', 'vencimiento'];
+      const keyMatches = dateHints.some(hint => keyName.toLowerCase().includes(hint));
+
+      // ISO regex simple
+      const isoPattern = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2})?/;
+      if (isoPattern.test(strVal)) return true;
+      if (keyMatches && !isNaN(Date.parse(strVal)) && strVal.length > 5) return true;
+      return false;
+    }
+
+    // Formateador de fecha en español legible
+    function formatDateSpanish(val) {
+      try {
+        const d = new Date(val);
+        if (isNaN(d.getTime())) return val;
+        return new Intl.DateTimeFormat('es-CO', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: val.includes('T') ? '2-digit' : undefined,
+          minute: val.includes('T') ? '2-digit' : undefined,
+        }).format(d);
+      } catch (e) {
+        return val;
+      }
+    }
+
+    // Limpia y formatea el nombre de una clave para etiqueta visual
+    function humanizeKey(key) {
+      if (!key) return '';
+      return key
+        .replace(/_/g, ' ')
+        .replace(/-/g, ' ')
+        .replace(/\b\w/g, char => char.toUpperCase());
+    }
+
+    // ==========================================
+    // ANÁLISIS DINÁMICO DE CLAVES (SCHEMA DETECTION)
+    // ==========================================
+    function analyzeSchema(sample) {
+      if (!sample || typeof sample !== 'object') return;
+      schemaKeys = Object.keys(sample);
+
+      // 1. Identificar la clave de Título
+      const titleCandidates = ['nombre', 'titulo', 'title', 'name', 'capacitacion', 'tema', 'curso', 'programa'];
+      keyRoles.titleKey = schemaKeys.find(k => titleCandidates.includes(k.toLowerCase())) ||
+                          schemaKeys.find(k => typeof sample[k] === 'string' && sample[k].length > 4 && sample[k].length < 90) ||
+                          schemaKeys[0];
+
+      // 2. Identificar imagen
+      const imgCandidates = ['imagen', 'image', 'foto', 'photo', 'banner', 'url_imagen', 'cover', 'thumbnail'];
+      keyRoles.imageKey = schemaKeys.find(k => imgCandidates.includes(k.toLowerCase())) ||
+                          schemaKeys.find(k => isImageUrl(sample[k])) || null;
+
+      // 3. Identificar descripción
+      const descCandidates = ['descripcion', 'description', 'detalle', 'resumen', 'objetivo', 'contenido'];
+      keyRoles.descKey = schemaKeys.find(k => descCandidates.includes(k.toLowerCase())) ||
+                         schemaKeys.find(k => typeof sample[k] === 'string' && sample[k].length >= 80 && k !== keyRoles.titleKey) || null;
+
+      // 4. Fechas y Estados
+      keyRoles.dateKeys = schemaKeys.filter(k => isDateString(sample[k], k));
+      keyRoles.badgeKeys = schemaKeys.filter(k => {
+        const lower = k.toLowerCase();
+        return ['estado', 'status', 'modalidad', 'categoria', 'nivel', 'tipo', 'cupos'].some(h => lower.includes(h));
+      });
+    }
+
+    // ==========================================
+    // CONSUMO DE API REST CON FETCH Y TRY/CATCH
+    // ==========================================
+    async function fetchCapacitaciones() {
+      // Estado UI: Cargando
+      stateLoading.classList.remove('hidden');
+      stateError.classList.add('hidden');
+      stateEmpty.classList.add('hidden');
+      cardsGrid.classList.add('hidden');
+      badgeTotal.innerHTML = `<span class="w-2 h-2 rounded-full bg-white mr-1.5 animate-pulse"></span> Conectando...`;
+
+      try {
+        const response = await fetch(API_CONFIG.endpoint, {
+          method: 'GET',
+          headers: API_CONFIG.headers
+        });
+
+        // Validación de respuesta HTTP
+        if (!response.ok) {
+          throw new Error(`Error en el servidor: HTTP ${response.status} (${response.statusText || 'Petición rechazada'})`);
+        }
+
+        const data = await response.json();
+
+        // Validar formato array
+        if (!Array.isArray(data)) {
+          throw new Error('La respuesta de la API no contiene una lista de registros válida.');
+        }
+
+        allRecords = data;
+
+        // Analizar estructura de campos del primer elemento si existen registros
+        if (allRecords.length > 0) {
+          analyzeSchema(allRecords[0]);
+        }
+
+        // Actualizar UI
+        badgeTotal.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-200 mr-1.5"></span> ${allRecords.length} capacitaciones`;
+        applyFilterAndRender();
+
+      } catch (error) {
+        console.error('Error al consultar capacitaciones:', error);
+        stateLoading.classList.add('hidden');
+        stateError.classList.remove('hidden');
+        errorMessageText.textContent = error.message || 'No fue posible establecer conexión con el repositorio de datos de Supabase.';
+        badgeTotal.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-300 mr-1.5"></span> Error de conexión`;
+      } finally {
+        stateLoading.classList.add('hidden');
+      }
+    }
+
+    // ==========================================
+    // RENDERIZADO DE TARJETAS INSTITUCIONALES
+    // ==========================================
+    function renderCards(records) {
+      cardsGrid.innerHTML = '';
+
+      if (records.length === 0) {
+        cardsGrid.classList.add('hidden');
+        stateEmpty.classList.remove('hidden');
+        resultsCount.textContent = '0 resultados';
+        return;
+      }
+
+      stateEmpty.classList.add('hidden');
+      cardsGrid.classList.remove('hidden');
+      resultsCount.textContent = `${records.length} ${records.length === 1 ? 'resultado' : 'resultados'}`;
+
+      records.forEach((record, index) => {
+        // Extracción de datos principales con fallbacks
+        const rawTitle = keyRoles.titleKey ? record[keyRoles.titleKey] : null;
+        const titleText = (rawTitle && String(rawTitle).trim() !== '') ? rawTitle : `Capacitación #${index + 1}`;
+        
+        // Imagen si existe
+        let imageUrl = null;
+        if (keyRoles.imageKey && record[keyRoles.imageKey] && isImageUrl(record[keyRoles.imageKey])) {
+          imageUrl = record[keyRoles.imageKey];
+        }
+
+        // Descripción
+        const descText = keyRoles.descKey && record[keyRoles.descKey] ? record[keyRoles.descKey] : null;
+
+        // Armar fila de etiquetas/badges (estado, modalidad, categoría)
+        const badgesHtml = keyRoles.badgeKeys.slice(0, 2).map(bKey => {
+          const val = record[bKey];
+          if (!val) return '';
+          return `
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-[#007C3E] border border-emerald-200/80">
+              ${humanizeKey(bKey)}: ${val}
+            </span>
+          `;
+        }).join('');
+
+        // Generar atributos o filas secundarias clave-valor
+        const secondaryFields = schemaKeys.filter(k => 
+          k !== keyRoles.titleKey && 
+          k !== keyRoles.imageKey && 
+          k !== keyRoles.descKey &&
+          !keyRoles.badgeKeys.slice(0, 2).includes(k)
+        ).slice(0, 4); // Limitar a los 4 campos más relevantes en tarjeta para mantener orden
+
+        const fieldsListHtml = secondaryFields.map(key => {
+          let val = record[key];
+          let formattedVal = '';
+
+          if (val === null || val === undefined || String(val).trim() === '') {
+            formattedVal = '<span class="text-slate-400 italic">No disponible</span>';
+          } else if (isDateString(val, key)) {
+            formattedVal = `<span class="font-medium text-slate-700">${formatDateSpanish(String(val))}</span>`;
+          } else if (typeof val === 'boolean') {
+            formattedVal = val 
+              ? '<span class="text-emerald-700 font-medium">Sí</span>' 
+              : '<span class="text-slate-500">No</span>';
+          } else if (typeof val === 'object') {
+            formattedVal = '<span class="text-xs text-slate-500 font-mono">Objeto</span>';
+          } else {
+            formattedVal = `<span class="font-medium text-slate-800 break-words">${String(val)}</span>`;
+          }
+
+          return `
+            <div class="flex items-start justify-between py-1.5 border-b border-slate-100 last:border-0 text-xs">
+              <span class="text-slate-500 font-medium shrink-0 mr-2">${humanizeKey(key)}:</span>
+              <span class="text-right text-slate-700 truncate max-w-[65%]">${formattedVal}</span>
+            </div>
+          `;
+        }).join('');
+
+        // Construir la tarjeta HTML
+        const cardArticle = document.createElement('article');
+        cardArticle.className = 'bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-slate-200/80 overflow-hidden flex flex-col justify-between group';
+
+        cardArticle.innerHTML = `
+          <!-- Parte Superior: Imagen o Banda Verde Institucional -->
+          ${imageUrl ? `
+            <div class="h-44 w-full overflow-hidden bg-slate-100 relative">
+              <img src="${imageUrl}" alt="${titleText}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'h-2 bg-[#39A900]\\'></div>';">
+              <div class="absolute bottom-2 left-2 flex gap-1 flex-wrap">
+                ${badgesHtml}
+              </div>
+            </div>
+          ` : `
+            <div class="h-2 w-full bg-[#39A900]"></div>
+            <div class="px-5 pt-3 flex gap-1.5 flex-wrap">
+              ${badgesHtml}
+            </div>
+          `}
+
+          <!-- Cuerpo de la Tarjeta -->
+          <div class="p-5 flex-grow flex flex-col">
+            <!-- Título Destacado -->
+            <h2 class="text-lg font-bold text-[#00324D] leading-snug line-clamp-2 mb-2.5 group-hover:text-[#39A900] transition-colors" title="${titleText}">
+              ${titleText}
+            </h2>
+
+            <!-- Descripción (si existe) -->
+            ${descText ? `
+              <p class="text-xs text-slate-600 line-clamp-2 mb-4 leading-relaxed">
+                ${descText}
+              </p>
+            ` : ''}
+
+            <!-- Lista de datos secundarios en filas -->
+            <div class="bg-slate-50/80 rounded-lg p-3 border border-slate-100 mt-auto">
+              ${fieldsListHtml || '<p class="text-xs text-slate-400">Sin datos secundarios registrados</p>'}
+            </div>
+          </div>
+
+          <!-- Acciones de la Tarjeta (Pie) -->
+          <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2">
+            <span class="text-[11px] font-medium text-slate-400">
+              ID Registro: ${record.id !== undefined ? record.id : (index + 1)}
+            </span>
+            <button 
+              onclick="openRecordDetail(${index})"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#00324D] hover:text-white bg-white hover:bg-[#39A900] rounded-lg border border-slate-300 hover:border-[#39A900] shadow-2xs transition-all"
+            >
+              <span>Ver ficha completa</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          </div>
+        `;
+
+        cardsGrid.appendChild(cardArticle);
+      });
+
+      // Refrescar iconos Lucide inyectados
+      lucide.createIcons();
+    }
+
+    // ==========================================
+    // FILTRADO DINÁMICO EN TIEMPO REAL
+    // ==========================================
+    function applyFilterAndRender() {
+      const query = searchInput.value.trim().toLowerCase();
+
+      // Botón limpiar
+      if (query.length > 0) {
+        clearSearchBtn.classList.remove('hidden');
+      } else {
+        clearSearchBtn.classList.add('hidden');
+      }
+
+      if (!query) {
+        renderCards(allRecords);
+        return;
+      }
+
+      // Filtra examinando los valores de todas las propiedades del objeto
+      const filtered = allRecords.filter(record => {
+        return Object.values(record).some(val => {
+          if (val === null || val === undefined) return false;
+          return String(val).toLowerCase().includes(query);
+        });
+      });
+
+      renderCards(filtered);
+    }
+
+    // ==========================================
+    // MODAL DE DETALLE (VER TODOS LOS ATRIBUTOS)
+    // ==========================================
+    window.openRecordDetail = function(index) {
+      const record = allRecords[index];
+      if (!record) return;
+
+      const rawTitle = keyRoles.titleKey ? record[keyRoles.titleKey] : null;
+      modalTitle.textContent = rawTitle || `Capacitación #${index + 1}`;
+
+      let rowsHtml = '';
+      Object.keys(record).forEach(k => {
+        let v = record[k];
+        let valDisplay = '';
+
+        if (v === null || v === undefined || String(v).trim() === '') {
+          valDisplay = '<span class="text-slate-400 italic">No disponible</span>';
+        } else if (isImageUrl(v)) {
+          valDisplay = `
+            <div class="mt-1">
+              <img src="${v}" class="max-h-48 rounded-lg border border-slate-200 shadow-sm" alt="${k}">
+              <a href="${v}" target="_blank" class="text-xs text-[#39A900] underline mt-1 block">Ver imagen original</a>
+            </div>
+          `;
+        } else if (isDateString(v, k)) {
+          valDisplay = `<span class="font-medium text-slate-800">${formatDateSpanish(String(v))}</span> <span class="text-xs text-slate-400">(${String(v)})</span>`;
+        } else if (typeof v === 'boolean') {
+          valDisplay = v ? '<span class="text-emerald-700 font-bold">Verdadero / Activo</span>' : '<span class="text-slate-500">Falso / Inactivo</span>';
+        } else if (typeof v === 'object') {
+          valDisplay = `<pre class="bg-slate-100 p-2 rounded text-xs font-mono overflow-x-auto">${JSON.stringify(v, null, 2)}</pre>`;
+        } else {
+          valDisplay = `<span class="text-slate-800">${String(v)}</span>`;
+        }
+
+        rowsHtml += `
+          <div class="border-b border-slate-100 pb-2.5">
+            <span class="text-xs font-bold text-[#00324D] uppercase tracking-wide block mb-0.5">${humanizeKey(k)}</span>
+            <div class="text-sm">${valDisplay}</div>
+          </div>
+        `;
+      });
+
+      modalBody.innerHTML = rowsHtml;
+      detailModal.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+      lucide.createIcons();
+    };
+
+    function closeModal() {
+      detailModal.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    closeModalBtn.addEventListener('click', closeModal);
+    closeModalFooterBtn.addEventListener('click', closeModal);
+    detailModal.addEventListener('click', (e) => {
+      if (e.target === detailModal) closeModal();
+    });
+
+    // ==========================================
+    // EVENT LISTENERS Y ARRANQUE
+    // ==========================================
+    searchInput.addEventListener('input', applyFilterAndRender);
+
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      applyFilterAndRender();
+      searchInput.focus();
+    });
+
+    resetFilterBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      applyFilterAndRender();
+    });
+
+    retryBtn.addEventListener('click', fetchCapacitaciones);
+    refreshBtn.addEventListener('click', fetchCapacitaciones);
+
+    // Tecla Escape para cerrar modal
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !detailModal.classList.contains('hidden')) {
+        closeModal();
+      }
+    });
+
+    // Inicializar iconos y disparar carga inicial al montar
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      fetchCapacitaciones();
+    });
+  </script>
+</body>
 </html>
