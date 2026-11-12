@@ -101,8 +101,8 @@ async function loadData() {
       method: 'GET',
       headers: {
         'apikey':        SUPABASE_ANON_KEY,
-        'Authorization': SUPABASE_AUTH,
-        'Accept':        'application/json',
+        'Authorization': SUPABASE_AUTH
+        //'Accept':        'application/json',
       },
     });
 
