@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Capacitaciones | SENA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              sena: {
+                green: "#39A900", // Verde institucional SENA
+                dark: "#00324D", // Azul oscuro institucional
+                light: "#F6F6F6",
+                accent: "#00A5B5",
+              },
+            },
+            fontFamily: {
+              sans: ["Inter", "system-ui", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body class="bg-sena-light min-h-screen font-sans text-sena-dark">
+    <!-- Header -->
+    <header class="bg-sena-green shadow-md">
+      <div class="max-w-7xl mx-auto px-4 py-4 flex items-center gap-3">
+        <div
+          class="w-10 h-10 rounded-full bg-white flex items-center justify-center font-bold text-sena-green"
+        >
+          S
+        </div>
+        <div>
+          <h1 class="text-white text-xl font-bold leading-tight">
+            SENA · Capacitaciones
+          </h1>
+          <p class="text-white/80 text-xs">Oferta formativa disponible</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Contenido -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6"
+      >
+        <h2 class="text-2xl font-bold text-sena-dark">
+          Programas de formación
+        </h2>
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Buscar capacitación..."
+          class="w-full sm:w-72 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sena-green"
+        />
+      </div>
+
+      <!-- Estado de carga -->
+      <div id="loading" class="text-center py-16">
+        <div
+          class="inline-block w-8 h-8 border-4 border-sena-green border-t-transparent rounded-full animate-spin"
+        ></div>
+        <p class="mt-3 text-gray-600">Cargando capacitaciones...</p>
+      </div>
+
+      <!-- Estado de error -->
+      <div
+        id="error"
+        class="hidden bg-red-50 border border-red-300 text-red-700 rounded-lg p-4"
+      ></div>
+
+      <!-- Grid de tarjetas -->
+      <div
+        id="cardsGrid"
+        class="hidden grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      ></div>
+
+      <!-- Sin resultados -->
+      <div id="empty" class="hidden text-center text-gray-500 py-16">
+        No se encontraron capacitaciones.
+      </div>
+    </main>
+
+    <footer class="mt-12 py-6 text-center text-sm text-gray-500">
+      © SENA · Servicio Nacional de Aprendizaje
+    </footer>
+
+    <!-- Configuración (NO subir a repositorio público) -->
+    <script src="config.js"></script>
+    <script src="assets/js/app.js"></script>
+  </body>
+</html>
